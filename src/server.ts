@@ -11,5 +11,3 @@ app.get('/movies', (req,res) => {
 app.listen(port, () => {
     console.log(`Servidor em execução em: http://localhost:${port}`);
 })
-
-// postar commit config express
