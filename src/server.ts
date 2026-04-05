@@ -90,7 +90,7 @@ app.put('/movies/:id', async (req, res) => {
     res.status(200).send();
 });
 
-app.delete('/movies:id', async (req, res) => {
+app.delete('/movies/:id', async (req, res) => {
     const id = Number(req.params.id);
 
     try {
@@ -143,5 +143,3 @@ app.get('/movies/:genreName', async (req, res) => {
 app.listen(port, () => {
     console.log(`Servidor em execução em: http://localhost:${port}`);
 });
-
-// adicionado filtro de filmes por genero
