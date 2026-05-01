@@ -4,11 +4,13 @@
     // File Layout
     "rootDir": "./",
     "outDir": "./dist",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "ES6",
-    "target": "es2016",
+    "module": "nodenext",
+    "target": "es2020",
     //"types": [],
     // For nodejs:
     // "lib": ["esnext"],
