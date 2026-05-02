@@ -151,7 +151,7 @@ app.put('/genres/:id', async (req, res) => {
     const { name } = req.body;
 
     if (!id) {
-        return res.status(400).send({ message: 'Filme não encontrado' });
+        return res.status(400).send({ message: 'Gênero não encontrado' });
     }
 
     if (!name) {
@@ -259,6 +259,15 @@ app.delete('/genres/:id', async (req, res) => {
     }
 
     res.status(200).send({message: "Filme excluído com sucesso"})
+});
+
+app.get('/language', async (_, res) => {
+    const language = await prisma.language.findMany({
+        orderBy: {
+            name: 'asc',
+        },
+    });
+    res.json(language);
 });
 
 app.listen(port, () => {
