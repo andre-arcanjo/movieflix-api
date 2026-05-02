@@ -270,6 +270,38 @@ app.get('/language', async (_, res) => {
     res.json(language);
 });
 
+app.post('/languages', async (req, res) => {
+    const { name } = req.body;
+
+    if (!name) {
+        return res
+            .status(400)
+            .send({ message: 'O nome da linguagem é obrigatória' });
+    }
+
+    try {
+        const languageWithSameTitle = await prisma.language.findFirst({
+            where: { name: { equals: name, mode: 'insensitive' } },
+        });
+
+        if (languageWithSameTitle) {
+            return res
+                .status(409)
+                .send('Já existe uma linguagem cadastrado com esse título');
+        }
+
+        await prisma.language.create({
+            data: {
+                name,
+            },
+        });
+    } catch (error) {
+        return res.status(500).send({ message: 'Falha ao cadastrar linguagem' });
+    }
+
+    res.status(201).send({message: "Linguagem cadastrada com sucesso"});
+});
+
 app.listen(port, () => {
     console.log(`Servidor em execução em: http://localhost:${port}`);
 });
