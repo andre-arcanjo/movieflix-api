@@ -261,7 +261,7 @@ app.delete('/genres/:id', async (req, res) => {
     res.status(200).send({message: "Filme excluído com sucesso"})
 });
 
-app.get('/language', async (_, res) => {
+app.get('/languages', async (_, res) => {
     const language = await prisma.language.findMany({
         orderBy: {
             name: 'asc',
@@ -300,6 +300,55 @@ app.post('/languages', async (req, res) => {
     }
 
     res.status(201).send({message: "Linguagem cadastrada com sucesso"});
+});
+
+app.put('/languages/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    if (!id) {
+        return res.status(400).send({ message: 'Linguagem não encontrada' });
+    }
+
+    if (!name) {
+        return res
+            .status(400)
+            .send({ message: 'O nome da linguagem é obrigatória.' });
+    }
+
+    try {
+        const genre = await prisma.language.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!genre) {
+            return res.status(404).send({ message: 'Linguagem não encontrado' });
+        }
+
+        const existingLanguage = await prisma.language.findFirst({
+            where: {
+                name: { equals: name, mode: 'insensitive' },
+                id: { not: Number(id) },
+            },
+        });
+
+        if (existingLanguage) {
+            return res
+                .status(409)
+                .send({ message: 'Este nome de linguagem já existe.' });
+        }
+
+        const updatedLanguage = await prisma.language.update({
+            where: { id: Number(id) },
+            data: { name },
+        });
+
+        res.status(200).json(updatedLanguage);
+    } catch (error) {
+        res.status(500).send({
+            message: 'Houve um problema ao atualizar a linguagem',
+        });
+    }
 });
 
 app.listen(port, () => {
