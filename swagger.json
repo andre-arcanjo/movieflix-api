@@ -132,6 +132,61 @@
                 }
             }
         }
+        },
+        "/genres": {
+            
+        },
+        "/genres/{id}": {
+            "put": {
+                "tags": [
+                    "Genre"
+                ],
+                "summary": "Alterar informações do gênero",
+                "description": "Atualiza as informações de um gênero existente. Permita modificar o nome do gênero.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID do gênero a ser atualizado",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "description": "Novos dados do gênero",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GenreInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Gênero atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Genre"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos fornecidos"
+                    },
+                    "404": {
+                        "description": "Gênero não encontrado"
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -196,6 +251,31 @@
                         "type": "string",
                         "format": "date",
                         "description": "Data de lançamento do filme"
+                    }
+                }
+            },
+            "Genre": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "ID do gênero"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Nome do gênero"
+                    }
+                }
+            },
+            "GenreInput": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Nome do gênero"
                     }
                 }
             }
