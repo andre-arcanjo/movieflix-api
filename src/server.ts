@@ -198,8 +198,10 @@ app.put('/genres/:id', async (req, res) => {
 app.post('/genres', async (req, res) => {
     const { name } = req.body;
 
-    if(!name) {
-        return res.status(400).send({message: 'O nome do gênero é obrigatório'})
+    if (!name) {
+        return res
+            .status(400)
+            .send({ message: 'O nome do gênero é obrigatório' });
     }
 
     try {
@@ -225,14 +227,39 @@ app.post('/genres', async (req, res) => {
     res.status(201).send();
 });
 
-app.get("/genres", async (_,res) => {
+app.get('/genres', async (_, res) => {
     const genres = await prisma.genre.findMany({
         orderBy: {
-            name: 'asc'
-        }
-    })
-    res.json(genres)
-})
+            name: 'asc',
+        },
+    });
+    res.json(genres);
+});
+
+app.delete('/genres/:id', async (req, res) => {
+    const id = Number(req.params.id);
+
+    try {
+        const genre = await prisma.genre.findUnique({
+            where: {
+                id,
+            }
+        })
+
+        if (!genre) return res.status(404).send({ message: 'Gênero não encontrado' });
+
+        await prisma.genre.delete({
+            where: {
+                id,
+            }
+        })
+        
+    }catch(error){
+        res.status(500).send({message: "Falha ao excluir gênero"})
+    }
+
+    res.status(200).send({message: "Filme excluído com sucesso"})
+});
 
 app.listen(port, () => {
     console.log(`Servidor em execução em: http://localhost:${port}`);
