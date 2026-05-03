@@ -351,6 +351,31 @@ app.put('/languages/:id', async (req, res) => {
     }
 });
 
+app.delete('/languages/:id', async (req, res) => {
+    const id = Number(req.params.id);
+
+    try {
+        const language = await prisma.language.findUnique({
+            where: {
+                id,
+            }
+        })
+
+        if (!language) return res.status(404).send({ message: 'Gênero não encontrado' });
+
+        await prisma.language.delete({
+            where: {
+                id,
+            }
+        })
+        
+    }catch(error){
+        res.status(500).send({message: "Falha ao excluir linguagem"})
+    }
+
+    res.status(200).send({message: "Linguagem excluída com sucesso"})
+});
+
 app.listen(port, () => {
     console.log(`Servidor em execução em: http://localhost:${port}`);
 });
