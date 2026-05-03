@@ -4,6 +4,16 @@ import swaggerUi from 'swagger-ui-express';
 
 import swaggerDocument from '../swagger.json' with { type: 'json' };
 
+import type { Request, Response, NextFunction } from 'express';
+
+declare global {
+    namespace Express {
+        interface Request {
+            id?: number;
+        }
+    }
+}
+
 const port = 3000;
 
 const app = express();
@@ -12,6 +22,17 @@ const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+function validateId(req: Request, res: Response, next: NextFunction) {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+        return res.status(400).json({ message: 'ID inválido' });
+    }
+
+    req.id = id;
+    next();
+}
 
 app.get('/movies', async (_, res) => {
     const movies = await prisma.movie.findMany({
@@ -26,13 +47,9 @@ app.get('/movies', async (_, res) => {
     res.json(movies);
 });
 
-app.get('/movies/id/:id', async (req, res) => {
+app.get('/movies/id/:id', validateId, async (req, res) => {
     try {
         const id = Number(req.params.id);
-
-        if (isNaN(id)) {
-            return res.status(400).json({ message: 'ID inválido' });
-        }
 
         const movieFilteredById = await prisma.movie.findUnique({
             include: {
@@ -156,12 +173,8 @@ app.post('/movies', async (req, res) => {
     res.status(201).json({ message: 'Filme cadastrado com sucesso.' });
 });
 
-app.put('/movies/:id', async (req, res) => {
+app.put('/movies/:id', validateId, async (req, res) => {
     const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        return res.status(400).json({ message: 'ID inválido.' });
-    }
 
     try {
         const movie = await prisma.movie.findUnique({
@@ -194,12 +207,8 @@ app.put('/movies/:id', async (req, res) => {
     res.status(200).json({ message: 'Filme alterado com sucesso.' });
 });
 
-app.delete('/movies/:id', async (req, res) => {
+app.delete('/movies/:id', validateId, async (req, res) => {
     const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        return res.status(400).json({ message: 'ID inválido' });
-    }
 
     try {
         const movie = await prisma.movie.findUnique({
@@ -265,13 +274,9 @@ app.post('/genres', async (req, res) => {
     }
 });
 
-app.put('/genres/:id', async (req, res) => {
+app.put('/genres/:id', validateId, async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
-
-    if (!id) {
-        return res.status(400).json({ message: 'Gênero não encontrado.' });
-    }
 
     if (!name) {
         return res
@@ -314,12 +319,8 @@ app.put('/genres/:id', async (req, res) => {
     }
 });
 
-app.delete('/genres/:id', async (req, res) => {
+app.delete('/genres/:id', validateId, async (req, res) => {
     const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        return res.status(400).json({ message: 'ID inválido' });
-    }
 
     try {
         const genre = await prisma.genre.findUnique({
@@ -384,7 +385,7 @@ app.post('/languages', async (req, res) => {
     }
 });
 
-app.put('/languages/:id', async (req, res) => {
+app.put('/languages/:id',validateId, async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
 
@@ -435,12 +436,8 @@ app.put('/languages/:id', async (req, res) => {
     }
 });
 
-app.delete('/languages/:id', async (req, res) => {
+app.delete('/languages/:id', validateId, async (req, res) => {
     const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        return res.status(400).json({ message: 'ID inválido' });
-    }
 
     try {
         const language = await prisma.language.findUnique({
