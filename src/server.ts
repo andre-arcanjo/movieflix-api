@@ -34,15 +34,18 @@ function validateId(req: Request, res: Response, next: NextFunction) {
     next();
 }
 
+const defaultInclude = {
+    genres: true,
+    languages: true,
+};
+
 app.get('/movies', async (_, res) => {
+    
     const movies = await prisma.movie.findMany({
         orderBy: {
             title: 'asc',
         },
-        include: {
-            genres: true,
-            languages: true,
-        },
+        include: defaultInclude
     });
     res.json(movies);
 });
@@ -52,10 +55,7 @@ app.get('/movies/id/:id', validateId, async (req, res) => {
         const id = Number(req.params.id);
 
         const movieFilteredById = await prisma.movie.findUnique({
-            include: {
-                genres: true,
-                languages: true,
-            },
+            include: defaultInclude,
             where: {
                 id,
             },
@@ -78,10 +78,7 @@ app.get('/movies/genres/:genreName', async (req, res) => {
             orderBy: {
                 title: 'asc',
             },
-            include: {
-                genres: true,
-                languages: true,
-            },
+            include: defaultInclude,
             where: {
                 genres: {
                     is: {
@@ -113,10 +110,7 @@ app.get('/movies/languages/:languageName', async (req, res) => {
             orderBy: {
                 title: 'asc',
             },
-            include: {
-                genres: true,
-                languages: true,
-            },
+            include: defaultInclude,
             where: {
                 languages: {
                     is: {
@@ -290,7 +284,7 @@ app.put('/genres/:id', validateId, async (req, res) => {
         });
 
         if (!genre) {
-            return res.status(404).send({ message: 'Gênero não encontrado.' });
+            return res.status(404).json({ message: 'Gênero não encontrado.' });
         }
 
         const existingGenre = await prisma.genre.findFirst({
@@ -337,7 +331,7 @@ app.delete('/genres/:id', validateId, async (req, res) => {
                 id,
             },
         });
-        res.status(200).json({ message: 'Filme excluído com sucesso.' });
+        res.status(200).json({ message: 'Gênero excluído com sucesso.' });
     } catch (error) {
         res.status(500).json({ message: 'Falha ao excluir gênero.' });
     }
