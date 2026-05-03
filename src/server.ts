@@ -40,24 +40,25 @@ const defaultInclude = {
 };
 
 app.get('/movies', async (_, res) => {
-    
-    const movies = await prisma.movie.findMany({
-        orderBy: {
-            title: 'asc',
-        },
-        include: defaultInclude
-    });
-    res.json(movies);
+    try {
+        const movies = await prisma.movie.findMany({
+            orderBy: {
+                title: 'asc',
+            },
+            include: defaultInclude,
+        });
+        res.status(200).json(movies);
+    } catch (error) {
+        res.status(500).json({ message: 'Falha ao buscar os filmes.' });
+    }
 });
 
 app.get('/movies/id/:id', validateId, async (req, res) => {
     try {
-        const id = Number(req.params.id);
-
         const movieFilteredById = await prisma.movie.findUnique({
             include: defaultInclude,
             where: {
-                id,
+                id: req.id!,
             },
         });
 
@@ -160,20 +161,17 @@ app.post('/movies', async (req, res) => {
                 release_date: new Date(release_date),
             },
         });
+        res.status(201).json({ message: 'Filme cadastrado com sucesso.' });
     } catch (error) {
         return res.status(500).json({ message: 'Falha ao cadastrar filme.' });
     }
-
-    res.status(201).json({ message: 'Filme cadastrado com sucesso.' });
 });
 
 app.put('/movies/:id', validateId, async (req, res) => {
-    const id = Number(req.params.id);
-
     try {
         const movie = await prisma.movie.findUnique({
             where: {
-                id,
+                id: req.id!,
             },
         });
 
@@ -188,26 +186,23 @@ app.put('/movies/:id', validateId, async (req, res) => {
 
         await prisma.movie.update({
             where: {
-                id,
+                id: req.id!,
             },
             data: data,
         });
+        res.status(200).json({ message: 'Filme alterado com sucesso.' });
     } catch (error) {
         return res
             .status(500)
             .json({ message: 'Falha ao atualizar o registro do filme.' });
     }
-
-    res.status(200).json({ message: 'Filme alterado com sucesso.' });
 });
 
 app.delete('/movies/:id', validateId, async (req, res) => {
-    const id = Number(req.params.id);
-
     try {
         const movie = await prisma.movie.findUnique({
             where: {
-                id,
+                id: req.id!,
             },
         });
 
@@ -217,7 +212,7 @@ app.delete('/movies/:id', validateId, async (req, res) => {
 
         await prisma.movie.delete({
             where: {
-                id,
+                id: req.id!,
             },
         });
         res.status(200).json({ message: 'Filme deletado com sucesso.' });
@@ -229,12 +224,16 @@ app.delete('/movies/:id', validateId, async (req, res) => {
 });
 
 app.get('/genres', async (_, res) => {
-    const genres = await prisma.genre.findMany({
-        orderBy: {
-            name: 'asc',
-        },
-    });
-    res.json(genres);
+    try {
+        const genres = await prisma.genre.findMany({
+            orderBy: {
+                name: 'asc',
+            },
+        });
+        res.status(200).json(genres);
+    } catch (error) {
+        return res.status(500).json({ message: 'Falha ao buscar os gêneros.' });
+    }
 });
 
 app.post('/genres', async (req, res) => {
@@ -269,7 +268,6 @@ app.post('/genres', async (req, res) => {
 });
 
 app.put('/genres/:id', validateId, async (req, res) => {
-    const { id } = req.params;
     const { name } = req.body;
 
     if (!name) {
@@ -280,7 +278,7 @@ app.put('/genres/:id', validateId, async (req, res) => {
 
     try {
         const genre = await prisma.genre.findUnique({
-            where: { id: Number(id) },
+            where: { id: req.id! },
         });
 
         if (!genre) {
@@ -290,7 +288,7 @@ app.put('/genres/:id', validateId, async (req, res) => {
         const existingGenre = await prisma.genre.findFirst({
             where: {
                 name: { equals: name, mode: 'insensitive' },
-                id: { not: Number(id) },
+                id: { not: req.id! },
             },
         });
 
@@ -300,8 +298,8 @@ app.put('/genres/:id', validateId, async (req, res) => {
                 .json({ message: 'Este nome de gênero já existe.' });
         }
 
-        const updatedGenre = await prisma.genre.update({
-            where: { id: Number(id) },
+        await prisma.genre.update({
+            where: { id: req.id! },
             data: { name },
         });
 
@@ -314,12 +312,10 @@ app.put('/genres/:id', validateId, async (req, res) => {
 });
 
 app.delete('/genres/:id', validateId, async (req, res) => {
-    const id = Number(req.params.id);
-
     try {
         const genre = await prisma.genre.findUnique({
             where: {
-                id,
+                id: req.id!,
             },
         });
 
@@ -328,7 +324,7 @@ app.delete('/genres/:id', validateId, async (req, res) => {
 
         await prisma.genre.delete({
             where: {
-                id,
+                id: req.id!,
             },
         });
         res.status(200).json({ message: 'Gênero excluído com sucesso.' });
@@ -338,12 +334,16 @@ app.delete('/genres/:id', validateId, async (req, res) => {
 });
 
 app.get('/languages', async (_, res) => {
-    const language = await prisma.language.findMany({
-        orderBy: {
-            name: 'asc',
-        },
-    });
-    res.json(language);
+    try {
+        const languages = await prisma.language.findMany({
+            orderBy: {
+                name: 'asc',
+            },
+        });
+        res.status(200).json(languages);
+    } catch (error) {
+        return res.status(500).json({ message: 'Falha ao buscar linguagens.' });
+    }
 });
 
 app.post('/languages', async (req, res) => {
@@ -379,13 +379,8 @@ app.post('/languages', async (req, res) => {
     }
 });
 
-app.put('/languages/:id',validateId, async (req, res) => {
-    const { id } = req.params;
+app.put('/languages/:id', validateId, async (req, res) => {
     const { name } = req.body;
-
-    if (!id) {
-        return res.status(400).json({ message: 'Linguagem não encontrada' });
-    }
 
     if (!name) {
         return res
@@ -394,11 +389,11 @@ app.put('/languages/:id',validateId, async (req, res) => {
     }
 
     try {
-        const genre = await prisma.language.findUnique({
-            where: { id: Number(id) },
+        const languages = await prisma.language.findUnique({
+            where: { id: req.id! },
         });
 
-        if (!genre) {
+        if (!languages) {
             return res
                 .status(404)
                 .json({ message: 'Linguagem não encontrada.' });
@@ -407,7 +402,7 @@ app.put('/languages/:id',validateId, async (req, res) => {
         const existingLanguage = await prisma.language.findFirst({
             where: {
                 name: { equals: name, mode: 'insensitive' },
-                id: { not: Number(id) },
+                id: { not: req.id! },
             },
         });
 
@@ -417,8 +412,8 @@ app.put('/languages/:id',validateId, async (req, res) => {
                 .json({ message: 'Este nome de linguagem já existe.' });
         }
 
-        const updatedLanguage = await prisma.language.update({
-            where: { id: Number(id) },
+        await prisma.language.update({
+            where: { id: req.id! },
             data: { name },
         });
 
@@ -431,12 +426,10 @@ app.put('/languages/:id',validateId, async (req, res) => {
 });
 
 app.delete('/languages/:id', validateId, async (req, res) => {
-    const id = Number(req.params.id);
-
     try {
         const language = await prisma.language.findUnique({
             where: {
-                id,
+                id: req.id!,
             },
         });
 
@@ -447,7 +440,7 @@ app.delete('/languages/:id', validateId, async (req, res) => {
 
         await prisma.language.delete({
             where: {
-                id,
+                id: req.id!,
             },
         });
         res.status(200).json({ message: 'Linguagem excluída com sucesso' });
