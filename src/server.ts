@@ -87,7 +87,36 @@ app.get('/movies/id/:id', async (req, res) => {
     }
 });
 
+// buscar filmes por lnguagem
 
+app.get('/movies/languages/:languageName', async (req, res) => {
+    try {
+        const moviesFilteredLanguageName = await prisma.movie.findMany({
+            orderBy: {
+                title: 'asc',
+            },
+            include: {
+                genres: true,
+                languages: true,
+            },
+            where: {
+                languages: {
+                    is: {
+                        name: {
+                            equals: req.params.languageName,
+                            mode: 'insensitive',
+                        },
+                    },
+                },
+            },
+        });
+        res.status(200).send(moviesFilteredLanguageName);
+    } catch (error) {
+        return res
+            .status(500)
+            .send({ message: 'Falha ao filtrar filmes por linguagem' });
+    }
+});
 
 // cadastrar um novo filme
 
