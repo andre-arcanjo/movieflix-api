@@ -49,7 +49,7 @@ app.get('/movies', async (_, res) => {
         });
         res.status(200).json(movies);
     } catch (error) {
-        res.status(500).json({ message: 'Falha ao buscar os filmes.' });
+        res.status(500).json({ message: 'Erro ao buscar os filmes.' });
     }
 });
 
@@ -69,7 +69,7 @@ app.get('/movies/id/:id', validateId, async (req, res) => {
     } catch (error) {
         return res
             .status(500)
-            .json({ message: 'Falha ao buscar filme por id.' });
+            .json({ message: 'Erro ao buscar filme por id.' });
     }
 });
 
@@ -101,7 +101,7 @@ app.get('/movies/genres/:genreName', async (req, res) => {
     } catch (error) {
         return res
             .status(500)
-            .json({ message: 'Falha ao filtrar filmes por gênero.' });
+            .json({ message: 'Erro ao filtrar filmes por gênero.' });
     }
 });
 
@@ -133,7 +133,7 @@ app.get('/movies/languages/:languageName', async (req, res) => {
     } catch (error) {
         return res
             .status(500)
-            .json({ message: 'Falha ao filtrar filmes por linguagem.' });
+            .json({ message: 'Erro ao filtrar filmes por linguagem.' });
     }
 });
 
@@ -148,7 +148,7 @@ app.post('/movies', async (req, res) => {
 
         if (movieWithSameTitle) {
             return res.status(409).json({
-                message: 'Já existe um filme cadastrado com esse título',
+                message: 'Já existe um filme cadastrado com esse título.',
             });
         }
 
@@ -163,7 +163,7 @@ app.post('/movies', async (req, res) => {
         });
         res.status(201).json({ message: 'Filme cadastrado com sucesso.' });
     } catch (error) {
-        return res.status(500).json({ message: 'Falha ao cadastrar filme.' });
+        return res.status(500).json({ message: 'Erro ao cadastrar filme.' });
     }
 });
 
@@ -194,7 +194,7 @@ app.put('/movies/:id', validateId, async (req, res) => {
     } catch (error) {
         return res
             .status(500)
-            .json({ message: 'Falha ao atualizar o registro do filme.' });
+            .json({ message: 'Erro ao atualizar o registro do filme.' });
     }
 });
 
@@ -219,7 +219,7 @@ app.delete('/movies/:id', validateId, async (req, res) => {
     } catch (error) {
         return res
             .status(500)
-            .json({ message: 'Não foi possível deletar o filme.' });
+            .json({ message: 'Erro ao deletar filme.' });
     }
 });
 
@@ -232,7 +232,7 @@ app.get('/genres', async (_, res) => {
         });
         res.status(200).json(genres);
     } catch (error) {
-        return res.status(500).json({ message: 'Falha ao buscar os gêneros.' });
+        return res.status(500).json({ message: 'Erro ao buscar os gêneros.' });
     }
 });
 
@@ -252,7 +252,7 @@ app.post('/genres', async (req, res) => {
 
         if (genreWithSameTitle) {
             return res.status(409).json({
-                message: 'Já existe um gênero cadastrado com esse título',
+                message: 'Já existe um gênero cadastrado com esse título.',
             });
         }
 
@@ -263,7 +263,7 @@ app.post('/genres', async (req, res) => {
         });
         res.status(201).json({ message: 'Gênero cadastrado com sucesso.' });
     } catch (error) {
-        return res.status(500).json({ message: 'Falha ao cadastrar gênero.' });
+        return res.status(500).json({ message: 'Erro ao cadastrar gênero.' });
     }
 });
 
@@ -329,7 +329,7 @@ app.delete('/genres/:id', validateId, async (req, res) => {
         });
         res.status(200).json({ message: 'Gênero excluído com sucesso.' });
     } catch (error) {
-        res.status(500).json({ message: 'Falha ao excluir gênero.' });
+        res.status(500).json({ message: 'Erro ao excluir gênero.' });
     }
 });
 
@@ -342,7 +342,7 @@ app.get('/languages', async (_, res) => {
         });
         res.status(200).json(languages);
     } catch (error) {
-        return res.status(500).json({ message: 'Falha ao buscar linguagens.' });
+        return res.status(500).json({ message: 'Erro ao buscar linguagens.' });
     }
 });
 
@@ -375,7 +375,7 @@ app.post('/languages', async (req, res) => {
     } catch (error) {
         return res
             .status(500)
-            .json({ message: 'Falha ao cadastrar linguagem.' });
+            .json({ message: 'Erro ao cadastrar linguagem.' });
     }
 });
 
@@ -445,7 +445,7 @@ app.delete('/languages/:id', validateId, async (req, res) => {
         });
         res.status(200).json({ message: 'Linguagem excluída com sucesso' });
     } catch (error) {
-        res.status(500).json({ message: 'Falha ao excluir linguagem.' });
+        res.status(500).json({ message: 'Erro ao excluir linguagem.' });
     }
 });
 
